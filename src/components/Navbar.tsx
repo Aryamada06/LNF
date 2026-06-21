@@ -27,6 +27,9 @@ export default function Navbar() {
 
   // useEffect ini digunakan untuk mengambil data user dan profil saat komponen pertama kali dimuat
   useEffect(() => {
+    // Timeout paksa: jika Supabase tidak merespons dalam 3 detik, hentikan loading
+    const timeoutId = setTimeout(() => setLoading(false), 3000)
+
     const getProfile = async () => {
       try {
         // Mengambil sesi user saat ini
@@ -40,6 +43,7 @@ export default function Navbar() {
       } catch (error) {
         console.error("Failed to load user profile:", error)
       } finally {
+        clearTimeout(timeoutId)
         setLoading(false)
       }
     }
@@ -58,7 +62,10 @@ export default function Navbar() {
     })
 
     // Bersihkan pemantauan jika komponen tidak lagi digunakan
-    return () => subscription.unsubscribe()
+    return () => {
+      clearTimeout(timeoutId)
+      subscription.unsubscribe()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
