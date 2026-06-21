@@ -102,71 +102,73 @@ export default function Navbar() {
         {/* Right Actions */}
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          {!loading && (
+          {loading ? (
+            // Skeleton placeholder saat loading agar layout tidak loncat
+            <div className="flex items-center gap-2">
+              <div className="h-10 w-16 rounded-2xl bg-secondary animate-pulse" />
+              <div className="h-10 w-20 rounded-2xl bg-secondary animate-pulse" />
+            </div>
+          ) : user ? (
             <>
-              {user ? (
-                <>
-                  <Link href="/items/new">
-                    <Button size="sm" className="hidden sm:flex gap-2 font-medium rounded-2xl transition-all h-10 px-4">
-                      <Plus className="h-4 w-4" />
-                      Laporan Baru
-                    </Button>
-                    <Button size="icon" variant="ghost" className="flex sm:hidden rounded-xl">
-                      <Plus className="h-5 w-5" />
-                    </Button>
-                  </Link>
+              <Link href="/items/new">
+                <Button size="sm" className="hidden sm:flex gap-2 font-medium rounded-2xl transition-all h-10 px-4">
+                  <Plus className="h-4 w-4" />
+                  Laporan Baru
+                </Button>
+                <Button size="icon" variant="ghost" className="flex sm:hidden rounded-xl">
+                  <Plus className="h-5 w-5" />
+                </Button>
+              </Link>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="flex items-center gap-2 rounded-full border bg-background p-0.5 pr-3 hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-ring shadow-sm">
-                        <Avatar className="h-8 w-8 rounded-full overflow-hidden relative flex items-center justify-center bg-secondary">
-                          {profile?.avatar_url ? (
-                            <Image src={profile.avatar_url} alt="Avatar" fill className="object-cover" />
-                          ) : (
-                            <AvatarFallback className="bg-secondary text-secondary-foreground text-xs font-bold">
-                              {initials}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                        <span className="hidden sm:block text-sm font-semibold text-foreground">{profile?.full_name ?? user.email?.split('@')[0]}</span>
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2">
-                      <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
-                        <Link href="/dashboard" className="flex items-center gap-2 font-medium">
-                          <LayoutDashboard className="h-4 w-4" />
-                          Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
-                        <Link href="/profile" className="flex items-center gap-2 font-medium">
-                          <User className="h-4 w-4" />
-                          Profil Saya
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator className="my-1" />
-                      <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 text-destructive cursor-pointer rounded-xl font-medium focus:bg-destructive/10 focus:text-destructive">
-                        <LogOut className="h-4 w-4" />
-                        Keluar
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Link href="/auth/login">
-                    <Button variant="ghost" size="sm" className="font-semibold rounded-2xl h-10 px-4">
-                      Masuk
-                    </Button>
-                  </Link>
-                  <Link href="/auth/register">
-                    <Button size="sm" className="font-semibold rounded-2xl h-10 px-4 shadow-sm">
-                      Daftar
-                    </Button>
-                  </Link>
-                </div>
-              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 rounded-full border bg-background p-0.5 pr-3 hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-ring shadow-sm">
+                    <Avatar className="h-8 w-8 rounded-full overflow-hidden relative flex items-center justify-center bg-secondary">
+                      {profile?.avatar_url ? (
+                        <Image src={profile.avatar_url} alt="Avatar" fill className="object-cover" />
+                      ) : (
+                        <AvatarFallback className="bg-secondary text-secondary-foreground text-xs font-bold">
+                          {initials}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <span className="hidden sm:block text-sm font-semibold text-foreground">{profile?.full_name ?? user.email?.split('@')[0]}</span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2">
+                  <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+                    <Link href="/dashboard" className="flex items-center gap-2 font-medium">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+                    <Link href="/profile" className="flex items-center gap-2 font-medium">
+                      <User className="h-4 w-4" />
+                      Profil Saya
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-1" />
+                  <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 text-destructive cursor-pointer rounded-xl font-medium focus:bg-destructive/10 focus:text-destructive">
+                    <LogOut className="h-4 w-4" />
+                    Keluar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link href="/auth/login">
+                <Button variant="ghost" size="sm" className="font-semibold rounded-2xl h-10 px-4">
+                  Masuk
+                </Button>
+              </Link>
+              <Link href="/auth/register">
+                <Button size="sm" className="font-semibold rounded-2xl h-10 px-4 shadow-sm">
+                  Daftar
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       </div>
