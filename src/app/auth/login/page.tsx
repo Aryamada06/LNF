@@ -62,9 +62,14 @@ export default function LoginPage() {
               {"Masuk ke akun Primakara LNF kamu untuk melaporkan barang hilang atau mengklaim barang yang ditemukan."}
             </p>
           </div>
-          <div className="mt-8 bg-card p-6 rounded-2xl border border-border shadow-sm">
-            <h3 className="font-bold text-foreground mb-2 text-sm">{"💡 Tahukah kamu?"}</h3>
-            <p className="text-sm font-medium text-primary-foreground">{"Lebih dari 80% barang yang dilaporkan di Primakara LNF berhasil dikembalikan ke pemiliknya."}</p>
+          <div className="mt-8 bg-primary/5 p-6 rounded-2xl border border-primary/20 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-bl-[4rem] -mr-4 -mt-4"></div>
+            <h3 className="font-bold text-primary mb-2 text-sm relative z-10 flex items-center gap-2">
+              <span className="text-lg">💡</span> Tahukah kamu?
+            </h3>
+            <p className="text-sm font-medium text-foreground leading-relaxed relative z-10">
+              Lebih dari <span className="font-bold text-primary">80% barang</span> yang dilaporkan di Primakara LNF berhasil dikembalikan ke pemiliknya.
+            </p>
           </div>
         </div>
 
