@@ -49,7 +49,8 @@ export default function DashboardPage() {
   const [actionLoading, setActionLoading] = useState(false)
 
   const fetchItems = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user
     if (!user) {
       router.push('/auth/login')
       return
@@ -74,19 +75,19 @@ export default function DashboardPage() {
       if (itemsToDelete.length > 0) {
         const idsToDelete = itemsToDelete.map(i => i.id)
         
-        // Gunakan await agar penghapusan selesai sebelum state diperbarui
-        await supabase.from('items').delete().in('id', idsToDelete)
-        
-        // Hapus juga gambar di storage jika ada
-        for (const item of itemsToDelete) {
-          if (item.image_url) {
-            const urls = item.image_url.split(',')
-            for (const url of urls) {
-              const path = url.split('/item-images/')[1]
-              if (path) await supabase.storage.from('item-images').remove([path])
+        // Jalankan penghapusan di background tanpa await agar dashboard cepat tampil
+        supabase.from('items').delete().in('id', idsToDelete).then(() => {
+          // Hapus juga gambar di storage jika ada
+          for (const item of itemsToDelete) {
+            if (item.image_url) {
+              const urls = item.image_url.split(',')
+              for (const url of urls) {
+                const path = url.split('/item-images/')[1]
+                if (path) supabase.storage.from('item-images').remove([path])
+              }
             }
           }
-        }
+        })
         
         // Perbarui data lokal agar langsung hilang tanpa perlu reload halaman
         const remainingItems = data.filter(item => !idsToDelete.includes(item.id))

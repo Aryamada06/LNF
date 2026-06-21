@@ -21,6 +21,7 @@ import {
 import { X, Loader2, ImagePlus, MapPin, FileText, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
 
 // Skema validasi form
 const formSchema = z.object({
@@ -173,13 +174,23 @@ export default function EditItemPage({ params }: { params: Promise<{ id: string 
       if (imageFiles.length > 0) {
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
+          toast.info('Sedang mengompresi dan mengunggah gambar...')
           for (const file of imageFiles) {
             const fileExt = file.name.split('.').pop()
-            const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
+            const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.webp`
+
+            // Kompres gambar sebelum upload
+            const options = {
+              maxSizeMB: 0.5,
+              maxWidthOrHeight: 1200,
+              useWebWorker: true,
+              fileType: 'image/webp'
+            }
+            const compressedFile = await imageCompression(file, options)
 
             const { data: uploadData, error: uploadError } = await supabase.storage
               .from('item-images')
-              .upload(fileName, file, { upsert: false })
+              .upload(fileName, compressedFile, { upsert: false })
 
             if (uploadError) {
               throw new Error(`Gagal upload gambar: ${uploadError.message}`)

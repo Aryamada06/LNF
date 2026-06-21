@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { User, Phone, Building2, Save, Loader2, ArrowLeft, Camera } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
 import type { Profile } from '@/lib/types'
 
 export default function ProfilePage() {
@@ -28,7 +29,8 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       // Cek apakah user sedang login
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
       if (!user) { router.push('/auth/login'); return }
 
       setEmail(user.email ?? '')
@@ -80,12 +82,22 @@ export default function ProfilePage() {
 
       // Jika ada file avatar baru, upload terlebih dahulu ke storage
       if (avatarFile) {
+        toast.info('Mengunggah foto profil...')
         const fileExt = avatarFile.name.split('.').pop()
-        const fileName = `${user.id}/avatar_${Date.now()}.${fileExt}`
+        const fileName = `${user.id}/avatar_${Date.now()}.webp`
+
+        // Kompres avatar
+        const options = {
+          maxSizeMB: 0.2, // 200KB max for avatar
+          maxWidthOrHeight: 400,
+          useWebWorker: true,
+          fileType: 'image/webp'
+        }
+        const compressedFile = await imageCompression(avatarFile, options)
 
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('item-images')
-          .upload(fileName, avatarFile, { upsert: true })
+          .upload(fileName, compressedFile, { upsert: true })
 
         if (uploadError) {
           throw new Error(`Upload foto gagal: ${uploadError.message}`)
