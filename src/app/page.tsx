@@ -109,9 +109,80 @@ async function ItemsGrid({ searchParams }: HomePageProps) {
   )
 }
 
+// Komponen halaman sambutan untuk user yang belum login
+function GuestHeroPage() {
+  return (
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center gap-8">
+        {/* Icon */}
+        <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-primary/10 border border-primary/20 shadow-lg shadow-primary/10">
+          <PackageSearch className="h-14 w-14 text-primary" />
+        </div>
+
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-4 py-1.5 text-sm text-foreground font-bold">
+          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
+          Sistem Lost &amp; Found Kampus Primakara
+        </div>
+
+        {/* Heading */}
+        <div className="space-y-4">
+          <h1 className="text-4xl sm:text-6xl font-extrabold text-foreground leading-[1.1] tracking-tight">
+            Temukan Kembali{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
+              Barang Kamu.
+            </span>
+          </h1>
+          <p className="text-muted-foreground text-lg sm:text-xl font-medium max-w-lg mx-auto">
+            Platform pelaporan terpadu untuk barang hilang dan temuan di lingkungan kampus.
+            Login untuk melihat semua laporan atau membuat laporan baru.
+          </p>
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link href="/auth/login">
+            <Button size="lg" className="font-semibold rounded-2xl h-12 px-8 shadow-md text-base">
+              Masuk untuk Melihat Laporan
+            </Button>
+          </Link>
+          <Link href="/auth/register">
+            <Button size="lg" variant="outline" className="font-semibold rounded-2xl h-12 px-8 text-base">
+              Daftar Akun Baru
+            </Button>
+          </Link>
+        </div>
+
+        {/* Feature Highlights */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl mt-4">
+          {[
+            { emoji: '🔍', title: 'Cari Barang', desc: 'Temukan barang hilang milikmu' },
+            { emoji: '📢', title: 'Laporkan', desc: 'Laporkan barang yang kamu temukan' },
+            { emoji: '💬', title: 'Hubungi', desc: 'Langsung via WhatsApp' },
+          ].map((f) => (
+            <div key={f.title} className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm">
+              <div className="text-3xl mb-2">{f.emoji}</div>
+              <div className="font-bold text-foreground text-sm">{f.title}</div>
+              <div className="text-muted-foreground text-xs mt-1">{f.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Komponen utama halaman beranda
 export default async function HomePage({ searchParams }: HomePageProps) {
   const supabase = await createServerSupabaseClient()
+
+  // Cek apakah user sudah login
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Jika belum login, tampilkan halaman sambutan saja (tanpa daftar barang)
+  if (!user) {
+    return <GuestHeroPage />
+  }
   
   // Fetch stats concurrently (Mengambil data statistik secara bersamaan agar lebih cepat)
   const [
@@ -137,7 +208,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-4 py-1.5 text-xs sm:text-sm text-foreground font-bold mb-4 sm:mb-6">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-slow" aria-hidden="true" />
-              Sistem Lost & Found Kampus
+              Sistem Lost &amp; Found Kampus
             </div>
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-foreground mb-4 sm:mb-6 leading-[1.1] tracking-tight">
               Temukan Kembali <br className="hidden sm:block" />
